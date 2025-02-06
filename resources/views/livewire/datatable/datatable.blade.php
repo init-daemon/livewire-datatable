@@ -113,4 +113,9 @@
             </tbody>
         </table>
     </div>
+    @if(count($this->rows))
+    <div class="mt-6 bg-white px-4 py-3 border border-gray-200 rounded-lg shadow-sm">
+        {{ $this->rows->links() }}
+    </div>
+    @endif
 </div>
