@@ -71,13 +71,18 @@
         </div>
     </div>
 
-
     <div class="overflow-x-auto bg-white rounded-lg shadow-sm border border-gray-200">
         <table class="min-w-full divide-y divide-gray-200">
             <thead>
                 <tr class="bg-gray-50">
                     @foreach($this->getColumns() as $field => $label)
-                    <livewire:datatable.table-head :key="$field" :label="$label" />
+                    <livewire:datatable.table-head 
+                        :key="$field"
+                        :label="$label" 
+                        :field="$field"
+                        :sort-field="$sortField" 
+                        :sort-direction="$sortDirection"
+                    />
                     @endforeach
                 </tr>
             </thead>

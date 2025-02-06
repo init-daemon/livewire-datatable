@@ -70,6 +70,28 @@ class Datatable extends Component
                         str_contains(strtolower($row['phone']), strtolower($this->search)) ||
                         str_contains(strtolower($row['description']), strtolower($this->search));
                 });
+            })
+            ->when($this->filters['status'], function ($collection) {
+                return $collection->filter(fn($row) => $row['status'] === $this->filters['status']);
+            })
+            ->when($this->filters['created_at_from'], function ($collection) {
+                return $collection->filter(fn($row) => Carbon::parse($row['created_at'])->greaterThanOrEqualTo($this->filters['created_at_from']));
+            })
+            ->when($this->filters['created_at_to'], function ($collection) {
+                return $collection->filter(fn($row) => Carbon::parse($row['created_at'])->lessThanOrEqualTo($this->filters['created_at_to']));
+            })
+            ->when($this->filters['balance_min'], function ($collection) {
+                return $collection->filter(fn($row) => $row['balance'] >= $this->filters['balance_min']);
+            })
+            ->when($this->filters['balance_max'], function ($collection) {
+                return $collection->filter(fn($row) => $row['balance'] <= $this->filters['balance_max']);
+            })
+            ->when($this->sortField, function ($collection) {
+                return $collection->sortBy(
+                    $this->sortField,
+                    SORT_REGULAR,
+                    $this->sortDirection === 'desc'
+                );
             });
 
         return new LengthAwarePaginator(
@@ -137,6 +159,16 @@ class Datatable extends Component
 
         if (method_exists($this, $afterMethod)) {
             $this->{$afterMethod}($page, null);
+        }
+    }
+
+    public function sort($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
         }
     }
 
