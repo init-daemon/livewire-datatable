@@ -61,7 +61,14 @@ class Datatable extends Component
     #[Computed]
     public function rows()
     {
-        $collection = collect($this->data);
+        $collection = collect($this->data)
+            ->when($this->search, function ($collection) {
+                return $collection->filter(function ($row) {
+                    return str_contains(strtolower($row['name']), strtolower($this->search)) ||
+                        str_contains(strtolower($row['phone']), strtolower($this->search)) ||
+                        str_contains(strtolower($row['description']), strtolower($this->search));
+                });
+            });
 
         return new LengthAwarePaginator(
             $collection->forPage($this->getPage(), $this->perPage),
