@@ -106,6 +106,11 @@ class Datatable extends Component
         );
     }
 
+    public function getStatusOptions()
+    {
+        return ['Active', 'Inactive', 'Pending'];
+    }
+
     public function getPage($pageName = 'page')
     {
         return $this->paginators[$pageName] ?? Paginator::resolveCurrentPage($pageName);
@@ -171,6 +176,27 @@ class Datatable extends Component
             $this->sortDirection = 'asc';
         }
     }
+
+    public function toggleColumn($column)
+    {
+        $this->selectedColumns[$column] = !$this->selectedColumns[$column];
+    }
+
+    public function selectAllColumns()
+    {
+        $this->selectedColumns = array_map(function () {
+            return true;
+        }, $this->getColumns());
+    }
+
+    public function deselectAllColumns()
+    {
+        $this->selectedColumns = array_map(function () {
+            return false;
+        }, $this->getColumns());
+    }
+
+
 
     public function render()
     {

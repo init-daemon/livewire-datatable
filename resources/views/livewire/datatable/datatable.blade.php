@@ -32,12 +32,16 @@
                     </svg>
                     Colonnes
                     <span class="bg-blue-100 text-blue-600 py-0.5 px-2 rounded-full text-xs font-medium">
-                        {{ 2 }}
+                        {{ count(array_filter($selectedColumns)) }}
                     </span>
                 </button>
 
                 <div x-show="open" @click.away="open = false" x-transition:enter="transition ease-out duration-200"
-
+                    x-transition:enter-start="opacity-0 transform scale-95"
+                    x-transition:enter-end="opacity-100 transform scale-100"
+                    x-transition:leave="transition ease-in duration-75"
+                    x-transition:leave-start="opacity-100 transform scale-100"
+                    x-transition:leave-end="opacity-0 transform scale-95"
                     class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-100 py-1 z-10">
                     <div class="px-4 py-2 border-b border-gray-100">
                         <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Gérer les colonnes</h3>
@@ -45,7 +49,7 @@
                     <div class="max-h-64 overflow-y-auto">
                         @foreach($this->getColumns() as $key => $label)
                         <label class="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer group">
-                            <input type="checkbox"
+                            <input type="checkbox" wire:model.live="selectedColumns.{{ $key }}"
                                 class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                             <span class="ml-2 text-sm text-gray-600 group-hover:text-gray-900">{{ $label }}</span>
                         </label>
@@ -53,14 +57,14 @@
                     </div>
                     <div class="px-4 py-2 border-t border-gray-100 bg-gray-50 rounded-b-lg">
                         <div class="flex flex-col gap-2">
-                            <span class="text-xs text-gray-500">{{ 2 }} colonnes
+                            <span class="text-xs text-gray-500">{{ count(array_filter($selectedColumns)) }} colonnes
                                 sélectionnées</span>
                             <div class="flex items-center justify-between border-t border-gray-200 pt-2">
-                                <button 
+                                <button wire:click="selectAllColumns"
                                     class="text-xs text-blue-600 hover:text-blue-800 transition-colors duration-150">
                                     Tout sélectionner
                                 </button>
-                                <button
+                                <button wire:click="deselectAllColumns"
                                     class="text-xs text-blue-600 hover:text-blue-800 transition-colors duration-150">
                                     Tout désélectionner
                                 </button>
@@ -77,13 +81,10 @@
             <thead>
                 <tr class="bg-gray-50">
                     @foreach($this->getColumns() as $field => $label)
-                    <livewire:datatable.table-head 
-                        :key="$field"
-                        :label="$label" 
-                        :field="$field"
-                        :sort-field="$sortField" 
-                        :sort-direction="$sortDirection"
-                    />
+                    @if($selectedColumns[$field])
+                    <livewire:datatable.table-head :key="$field" :label="$label" :field="$field"
+                        :sort-field="$sortField" :sort-direction="$sortDirection" />
+                    @endif
                     @endforeach
                 </tr>
             </thead>
