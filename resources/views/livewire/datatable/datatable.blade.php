@@ -15,7 +15,8 @@
             </div>
         </div>
         <div class="w-full md:w-auto flex items-center gap-4">
-            <select class="pl-3 pr-10 py-2 text-sm border border-gray-200 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
+            <select wire:model.live="perPage"
+                class="pl-3 pr-10 py-2 text-sm border border-gray-200 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
                 <option value="10">10 par page</option>
                 <option value="25">25 par page</option>
                 <option value="50">50 par page</option>
