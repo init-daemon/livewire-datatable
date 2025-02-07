@@ -1,4 +1,5 @@
 <div class="p-6 bg-gray-50 rounded-xl">
+    <!-- En-tête avec recherche et filtres -->
     <div class="mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
         <div class="w-full md:w-1/3">
             <div class="relative">
@@ -9,7 +10,6 @@
                             clip-rule="evenodd" />
                     </svg>
                 </div>
-                
                 <input wire:model.live.debounce.300ms="search" type="text" placeholder="Rechercher..."
                     class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
             </div>
@@ -36,18 +36,13 @@
                     </span>
                 </button>
 
-                <div 
-                    x-show="open" 
-                    @click.away="open = false"  
-                    x-transition:enter="transition ease-out duration-200"
+                <div x-show="open" @click.away="open = false" x-transition:enter="transition ease-out duration-200"
                     x-transition:enter-start="opacity-0 transform scale-95"
                     x-transition:enter-end="opacity-100 transform scale-100"
                     x-transition:leave="transition ease-in duration-75"
                     x-transition:leave-start="opacity-100 transform scale-100"
                     x-transition:leave-end="opacity-0 transform scale-95"
-                    x-cloak
-                    class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-100 py-1 z-10"
-                >
+                    class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-100 py-1 z-10">
                     <div class="px-4 py-2 border-b border-gray-100">
                         <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Gérer les colonnes</h3>
                     </div>
@@ -81,6 +76,117 @@
         </div>
     </div>
 
+    <!-- Section des filtres -->
+    <div class="mb-6">
+        <button wire:click="$toggle('showFilters')"
+            class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+            </svg>
+            Filtres
+            @if(array_filter($filters))
+            <span class="ml-2 bg-blue-100 text-blue-600 py-0.5 px-2 rounded-full text-xs font-medium">
+                {{ count(array_filter($filters)) }}
+            </span>
+            @endif
+        </button>
+
+        @if($showFilters)
+        <div class="mt-4 p-6 bg-white rounded-lg border border-gray-200 shadow-sm space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Filtre par statut -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Statut</label>
+                    <div class="relative">
+                        <select wire:model.live="filters.status"
+                            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                            <option value="">Tous les statuts</option>
+                            @foreach($this->getStatusOptions() as $status)
+                            <option value="{{ $status }}">{{ $status }}</option>
+                            @endforeach
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filtre par date -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Date de début</label>
+                    <div class="relative">
+                        <input type="date" wire:model.live="filters.created_at_from"
+                            class="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                            placeholder="Sélectionner une date">
+                        <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Date de fin</label>
+                    <div class="relative">
+                        <input type="date" wire:model.live="filters.created_at_to"
+                            class="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                            placeholder="Sélectionner une date">
+                        <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filtre par solde -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Solde minimum</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 text-sm">$</span>
+                        </div>
+                        <input type="number" wire:model.live="filters.balance_min"
+                            class="block w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                            placeholder="0.00">
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Solde maximum</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 text-sm">$</span>
+                        </div>
+                        <input type="number" wire:model.live="filters.balance_max"
+                            class="block w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                            placeholder="0.00">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end pt-4 border-t border-gray-100">
+                <button wire:click="resetFilters"
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Réinitialiser les filtres
+                </button>
+            </div>
+        </div>
+        @endif
+    </div>
+
+    <!-- Table -->
     <div class="overflow-x-auto bg-white rounded-lg shadow-sm border border-gray-200">
         <table class="min-w-full divide-y divide-gray-200">
             <thead>
@@ -125,6 +231,8 @@
             </tbody>
         </table>
     </div>
+
+    <!-- Pagination -->
     @if(count($this->rows))
     <div class="mt-6 bg-white px-4 py-3 border border-gray-200 rounded-lg shadow-sm">
         {{ $this->rows->links() }}

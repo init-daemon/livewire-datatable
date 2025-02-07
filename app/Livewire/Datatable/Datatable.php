@@ -2,14 +2,12 @@
 
 namespace App\Livewire\Datatable;
 
-use Illuminate\Pagination\Paginator;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Computed;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Carbon\Carbon;
-use Str;
 
 class Datatable extends Component
 {
@@ -60,6 +58,22 @@ class Datatable extends Component
         ];
     }
 
+    public function getStatusOptions()
+    {
+        return ['Active', 'Inactive', 'Pending'];
+    }
+
+    public function resetFilters()
+    {
+        $this->reset('filters');
+        $this->resetPage();
+    }
+
+    public function updatedFilters()
+    {
+        $this->resetPage();
+    }
+
     #[Computed]
     public function rows()
     {
@@ -106,65 +120,24 @@ class Datatable extends Component
         );
     }
 
-    public function getStatusOptions()
+    protected function getPage()
     {
-        return ['Active', 'Inactive', 'Pending'];
+        return $this->paginators['page'] ?? 1;
     }
 
-    public function getPage($pageName = 'page')
+    public function paginationView()
     {
-        return $this->paginators[$pageName] ?? Paginator::resolveCurrentPage($pageName);
+        return 'vendor.livewire.tailwind';
     }
 
-    public function previousPage($pageName = 'page')
+    public function updatingSearch()
     {
-        $this->setPage(max(($this->paginators[$pageName] ?? 1) - 1, 1), $pageName);
+        $this->resetPage();
     }
 
-    public function nextPage($pageName = 'page')
+    public function updatingPerPage()
     {
-        $this->setPage(($this->paginators[$pageName] ?? 1) + 1, $pageName);
-    }
-
-    public function gotoPage($page, $pageName = 'page')
-    {
-        $this->setPage($page, $pageName);
-    }
-
-    public function resetPage($pageName = 'page')
-    {
-        $this->setPage(1, $pageName);
-    }
-
-    public function setPage($page, $pageName = 'page')
-    {
-        if (is_numeric($page)) {
-            $page = (int) ($page <= 0 ? 1 : $page);
-        }
-
-        $beforePaginatorMethod = 'updatingPaginators';
-        $afterPaginatorMethod = 'updatedPaginators';
-
-        $beforeMethod = 'updating' . ucfirst(Str::camel($pageName));
-        $afterMethod = 'updated' . ucfirst(Str::camel($pageName));
-
-        if (method_exists($this, $beforePaginatorMethod)) {
-            $this->{$beforePaginatorMethod}($page, $pageName);
-        }
-
-        if (method_exists($this, $beforeMethod)) {
-            $this->{$beforeMethod}($page, null);
-        }
-
-        $this->paginators[$pageName] = $page;
-
-        if (method_exists($this, $afterPaginatorMethod)) {
-            $this->{$afterPaginatorMethod}($page, $pageName);
-        }
-
-        if (method_exists($this, $afterMethod)) {
-            $this->{$afterMethod}($page, null);
-        }
+        $this->resetPage();
     }
 
     public function sort($field)
@@ -195,8 +168,6 @@ class Datatable extends Component
             return false;
         }, $this->getColumns());
     }
-
-
 
     public function render()
     {
