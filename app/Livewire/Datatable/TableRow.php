@@ -19,4 +19,14 @@ class TableRow extends Component
     {
         return view('livewire.datatable.table-row');
     }
+
+    public function onEdit(String $title)
+    {
+        $this->dispatch('toggle-modal', $title);
+    }
+
+    public function onRowClick()
+    {
+        $this->dispatch('toggle-modal', title: 'Modifier l\'utilisateur', childComponent: 'form.edit-user-form', userData: $this->row);
+    }
 }

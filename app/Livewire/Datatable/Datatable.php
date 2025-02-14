@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Datatable;
 
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Computed;
